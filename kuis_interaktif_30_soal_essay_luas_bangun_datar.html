@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif 30 Soal Essay: Luas Bangun Datar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+        }
+        .shape-grid-bg {
+            background-image: radial-gradient(#cbd5e1 1.35px, transparent 1.35px);
+            background-size: 18px 18px;
+        }
+        .shape-svg {
+            filter: drop-shadow(0px 4px 8px rgba(15, 23, 42, 0.08));
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- ====================================================================== -->
+    <!-- HEADER UTAMA & STATUS PENYIMPANAN                                      -->
+    <!-- ====================================================================== -->
+    <header class="bg-gradient-to-r from-indigo-700 via-blue-600 to-emerald-600 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex items-center space-x-3 w-full md:w-auto">
+                <div class="bg-white/20 p-2.5 rounded-2xl backdrop-blur-md shadow-inner text-2xl">📐</div>
+                <div>
+                    <h1 class="text-base md:text-xl font-extrabold tracking-tight">Kuis Interaktif 30 Soal Essay Luas Bangun Datar</h1>
+                    <p class="text-xs text-sky-100">Persegi • Persegi Panjang • Jajar Genjang • Segitiga • Belah Ketupat • Layang-Layang • Trapesium</p>
+                </div>
+            </div>
+
+            <!-- Kontrol Navigasi, Status Simpan & Skor -->
+            <div class="flex flex-wrap items-center justify-between md:justify-end gap-2.5 w-full md:w-auto text-xs">
+                <button type="button" onclick="toggleNavigationPanel()" class="bg-white/15 hover:bg-white/25 border border-white/25 px-3 py-1.5 rounded-xl flex items-center gap-1.5 font-extrabold transition-all cursor-pointer">
+                    <span id="nav-toggle-icon">🧭</span>
+                    <span id="nav-toggle-label">Sembunyikan Navigasi</span>
+                </button>
+
+                <div id="save-status-pill" class="bg-black/20 border border-white/20 px-3 py-1.5 rounded-xl flex items-center gap-2 font-semibold">
+                    <span id="save-dot" class="w-2.5 h-2.5 rounded-full bg-amber-300 animate-pulse"></span>
+                    <span id="save-status-text">Menyiapkan penyimpanan...</span>
+                </div>
+
+                <div class="bg-white text-indigo-950 px-3.5 py-1.5 rounded-xl font-extrabold shadow">
+                    Benar: <span id="header-correct-count" class="text-emerald-600">0</span>/30
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ====================================================================== -->
+    <!-- KONTEN UTAMA KUIS                                                      -->
+    <!-- ====================================================================== -->
+    <main id="quiz-main-layout" class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- ================================================================== -->
+        <!-- KOLOM KIRI: NAVIGASI NOMOR SOAL & PROGRES (BISA DI-HIDE)            -->
+        <!-- ================================================================== -->
+        <aside id="quiz-nav-sidebar" class="lg:col-span-4 bg-white rounded-3xl p-5 shadow-sm border border-slate-200 lg:sticky lg:top-24 space-y-5">
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-700">Navigasi 30 Soal Essay</span>
+                    <span class="text-xs font-bold text-slate-500">Terjawab: <strong id="nav-answered-count" class="text-slate-800">0</strong>/30</span>
+                </div>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Ketik jawaban angka pada kolom isian. Status <strong>Benar / Salah</strong> langsung muncul secara otomatis tanpa membocorkan rumus atau langkah jawaban.
+                </p>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="space-y-1.5">
+                <div class="flex justify-between text-[11px] font-bold text-slate-600">
+                    <span>Progres Pengerjaan</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-indigo-600 to-emerald-500 transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Legenda Status Nomor -->
+            <div class="grid grid-cols-3 gap-2 text-[11px] font-bold bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                <div class="flex items-center gap-1.5 text-slate-600">
+                    <span class="w-3.5 h-3.5 rounded bg-white border-2 border-slate-300 inline-block"></span>
+                    <span>Belum</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-emerald-700">
+                    <span class="w-3.5 h-3.5 rounded bg-emerald-500 inline-block"></span>
+                    <span>Benar</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-rose-700">
+                    <span class="w-3.5 h-3.5 rounded bg-rose-500 inline-block"></span>
+                    <span>Salah</span>
+                </div>
+            </div>
+
+            <!-- Grid 30 Tombol Nomor Soal -->
+            <div id="question-nav-grid" class="grid grid-cols-6 gap-2 max-h-60 overflow-y-auto custom-scroll p-1">
+                <!-- Diisi otomatis oleh JavaScript -->
+            </div>
+
+            <!-- Lompat Cepat per Bangun Datar -->
+            <div class="space-y-2 pt-2 border-t border-slate-100">
+                <span class="block text-[11px] font-extrabold text-slate-500 uppercase">Lompat ke Bangun Datar:</span>
+                <div class="grid grid-cols-2 gap-2 text-xs font-bold">
+                    <button type="button" onclick="jumpToQuestion(1)" class="p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 text-left transition-all cursor-pointer">■ Soal 1–4: Persegi</button>
+                    <button type="button" onclick="jumpToQuestion(5)" class="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-left transition-all cursor-pointer">▬ Soal 5–9: Persegi Panjang</button>
+                    <button type="button" onclick="jumpToQuestion(10)" class="p-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 text-left transition-all cursor-pointer">▱ Soal 10–14: Jajar Genjang</button>
+                    <button type="button" onclick="jumpToQuestion(15)" class="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-left transition-all cursor-pointer">▲ Soal 15–19: Segitiga</button>
+                    <button type="button" onclick="jumpToQuestion(20)" class="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 text-left transition-all cursor-pointer">❖ Soal 20–23: Belah Ketupat</button>
+                    <button type="button" onclick="jumpToQuestion(24)" class="p-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 text-left transition-all cursor-pointer">🪁 Soal 24–26: Layang-Layang</button>
+                    <button type="button" onclick="jumpToQuestion(27)" class="col-span-2 p-2 rounded-xl bg-yellow-50 hover:bg-yellow-100 text-yellow-900 border border-yellow-300 text-left transition-all cursor-pointer">⏢ Soal 27–30: Trapesium</button>
+                </div>
+            </div>
+
+            <!-- Tombol Rekap & Reset -->
+            <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+                <button type="button" onclick="openSummaryModal()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 px-4 rounded-xl text-xs shadow transition-all cursor-pointer">
+                    📊 Lihat Rekap Nilai Kuis
+                </button>
+                <button type="button" onclick="openResetModal()" class="w-full bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 font-bold py-2 px-4 rounded-xl text-xs border border-slate-200 hover:border-rose-200 transition-all cursor-pointer">
+                    🔄 Kosongkan Semua Jawaban
+                </button>
+            </div>
+        </aside>
+
+        <!-- ================================================================== -->
+        <!-- KOLOM KANAN: KARTU SOAL ESSAY AKTIF (FOKUS SATU SOAL)               -->
+        <!-- ================================================================== -->
+        <section id="quiz-question-column" class="lg:col-span-8 space-y-5">
+            <div id="active-question-card" class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border-2 border-indigo-200 space-y-6">
+
+                <!-- Baris Atas: Nomor Soal, Topik & Status Instan -->
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span id="active-q-badge" class="bg-indigo-600 text-white text-xs font-extrabold px-3.5 py-1.5 rounded-xl shadow-xs">Soal #1 dari 30</span>
+                        <span id="active-q-topic" class="bg-indigo-100 text-indigo-800 text-xs font-extrabold px-3 py-1 rounded-full">Persegi</span>
+                    </div>
+                    <span id="active-q-status-pill" class="text-xs font-extrabold px-3.5 py-1 rounded-full bg-slate-100 text-slate-600">Menunggu Jawaban</span>
+                </div>
+
+                <!-- Isi Soal & Ilustrasi Bangun Datar -->
+                <div id="active-q-body" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <!-- Diisi otomatis oleh JavaScript -->
+                </div>
+
+                <!-- Kolom Isian Essay Bersih (Tanpa Petunjuk Bocoran) -->
+                <div class="bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-200 space-y-3">
+                    <label for="essay-answer-input" class="block text-xs md:text-sm font-extrabold text-slate-800">
+                        Isian Jawaban Essay (Benar/Salah langsung muncul saat kamu mengetik):
+                    </label>
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                        <div class="flex-grow flex items-center bg-white border-2 border-slate-300 focus-within:border-indigo-600 rounded-2xl px-4 py-2.5 shadow-inner">
+                            <input
+                                type="text"
+                                inputmode="decimal"
+                                autocomplete="off"
+                                id="essay-answer-input"
+                                placeholder="Tulis angka jawabanmu..."
+                                oninput="handleEssayInput(currentQuestionIndex, this.value)"
+                                class="w-full font-extrabold text-base md:text-lg text-slate-900 focus:outline-none bg-transparent"
+                            >
+                            <span id="active-q-unit" class="ml-3 pl-3 border-l border-slate-200 text-xs md:text-sm font-extrabold text-indigo-700 whitespace-nowrap">cm²</span>
+                        </div>
+                        <button type="button" onclick="clearCurrentAnswer()" class="px-4 py-3 rounded-2xl bg-white hover:bg-slate-100 border border-slate-300 text-xs font-bold text-slate-600 transition-all cursor-pointer">
+                            Bersihkan
+                        </button>
+                    </div>
+
+                    <!-- Umpan Balik Benar / Salah Langsung -->
+                    <div id="active-q-feedback" class="hidden p-4 rounded-2xl text-xs md:text-sm font-bold border"></div>
+                </div>
+
+                <!-- Tombol Sebelumnya & Berikutnya -->
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-100">
+                    <button type="button" id="btn-prev-q" onclick="navigateStep(-1)" class="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs md:text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                        ← Soal Sebelumnya
+                    </button>
+                    <div class="text-xs font-bold text-slate-500">
+                        Posisi: <span id="pos-indicator">1 / 30</span>
+                    </div>
+                    <button type="button" id="btn-next-q" onclick="navigateStep(1)" class="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs md:text-sm shadow transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer">
+                        Soal Berikutnya →
+                    </button>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-5 mt-10 text-center text-xs text-slate-500">
+        <p>Kuis Interaktif 30 Soal Essay Luas Bangun Datar • Penyimpanan Otomatis Aktif</p>
+    </footer>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL REKAP NILAI                                                      -->
+    <!-- ====================================================================== -->
+    <div id="summary-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 md:p-8 shadow-2xl border border-slate-200 max-h-[88vh] flex flex-col space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-lg md:text-xl font-extrabold text-slate-900">📊 Rekap Nilai Kuis (30 Soal Essay)</h3>
+                <button type="button" onclick="closeSummaryModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 font-bold text-slate-600 flex items-center justify-center cursor-pointer">✕</button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl">
+                    <div class="text-[11px] font-bold text-emerald-700">Benar</div>
+                    <div id="modal-correct" class="text-2xl font-extrabold text-emerald-600">0</div>
+                </div>
+                <div class="bg-rose-50 border border-rose-200 p-3.5 rounded-2xl">
+                    <div class="text-[11px] font-bold text-rose-700">Salah</div>
+                    <div id="modal-wrong" class="text-2xl font-extrabold text-rose-600">0</div>
+                </div>
+                <div class="bg-indigo-50 border border-indigo-200 p-3.5 rounded-2xl">
+                    <div class="text-[11px] font-bold text-indigo-700">Nilai Akhir</div>
+                    <div id="modal-score" class="text-2xl font-extrabold text-indigo-700">0</div>
+                </div>
+            </div>
+
+            <div id="modal-breakdown-list" class="overflow-y-auto custom-scroll space-y-2 text-xs pr-1 flex-grow"></div>
+
+            <div class="pt-2 border-t border-slate-100 flex justify-end">
+                <button type="button" onclick="closeSummaryModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-5 py-2.5 rounded-xl text-xs cursor-pointer">
+                    Tutup Rekap
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- MODAL KONFIRMASI RESET                                                 -->
+    <!-- ====================================================================== -->
+    <div id="reset-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div class="text-2xl">⚠️</div>
+            <h3 class="text-lg font-extrabold text-slate-900">Kosongkan Semua Jawaban?</h3>
+            <p class="text-xs md:text-sm text-slate-600 leading-relaxed">
+                Seluruh jawaban pada 30 soal essay akan dihapus dan dikembalikan ke kondisi awal. Yakin ingin melanjutkan?
+            </p>
+            <div class="flex justify-end gap-2.5 pt-2">
+                <button type="button" onclick="closeResetModal()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer">Batal</button>
+                <button type="button" onclick="confirmResetAllAnswers()" class="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs shadow cursor-pointer">Ya, Kosongkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====================================================================== -->
+    <!-- ILUSTRASI SVG BANGUN DATAR JELAS, PROPORSIONAL & TIDAK TERPOTONG       -->
+    <!-- ====================================================================== -->
+    <script>
+        /*
+         * Pembungkus ilustrasi seragam:
+         * - ViewBox diperlebar dan ditata ulang agar label samping, atas, dan bawah aman tanpa terpotong.
+         * - Keterangan "Luas = ..." selalu ditempatkan seragam di bagian bawah ilustrasi (areaLuas),
+         *   terpisah dengan jarak yang jelas dari label ukuran alas/sisi maupun badge nama bangun datar.
+         */
+        function wrapIllustration(svgInner, captionText, areaLuasText = "") {
+            const luasBadge = areaLuasText
+                ? `<div class="mt-2.5 text-[11px] font-extrabold text-indigo-950 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">${areaLuasText}</div>`
+                : `<div class="mt-2.5 text-[11px] font-semibold text-slate-400 bg-white/70 px-3 py-1 rounded-full border border-slate-200">Luas = ?</div>`;
+
+            return `
+                <div class="shape-grid-bg p-4 rounded-2xl border-2 border-slate-200 flex flex-col items-center justify-center overflow-hidden">
+                    <svg viewBox="0 0 340 205" class="shape-svg w-full max-w-[340px] h-auto block">
+                        ${svgInner}
+                    </svg>
+                    <span class="mt-1 text-[11px] font-bold text-slate-600 bg-white/95 px-3 py-0.5 rounded-full border border-slate-200">${captionText}</span>
+                    ${luasBadge}
+                </div>
+            `;
+        }
+
+        function drawPersegiSVG(labelBottom, labelRight, caption = "Persegi", areaLuasText = "") {
+            return wrapIllustration(`
+                <rect x="112" y="34" width="96" height="96" rx="4" fill="#c7d2fe" stroke="#4338ca" stroke-width="3"/>
+                <text x="160" y="150" text-anchor="middle" font-size="12.5" font-weight="800" fill="#1e1b4b">${labelBottom}</text>
+                <text x="218" y="86" text-anchor="start" font-size="12.5" font-weight="800" fill="#1e1b4b">${labelRight}</text>
+            `, caption, areaLuasText);
+        }
+
+        function drawPersegiPanjangSVG(labelTop, labelLeft, caption = "Persegi Panjang", areaLuasText = "") {
+            return wrapIllustration(`
+                <rect x="108" y="46" width="144" height="84" rx="4" fill="#a7f3d0" stroke="#047857" stroke-width="3"/>
+                <text x="180" y="32" text-anchor="middle" font-size="12.5" font-weight="800" fill="#064e3b">${labelTop}</text>
+                <text x="98" y="92" text-anchor="end" font-size="12.5" font-weight="800" fill="#064e3b">${labelLeft}</text>
+            `, caption, areaLuasText);
+        }
+
+        function drawJajarGenjangSVG(labelBottom, labelHeight, caption = "Jajar Genjang", areaLuasText = "") {
+            return wrapIllustration(`
+                <polygon points="122,42 254,42 224,126 92,126" fill="#e9d5ff" stroke="#6d28d9" stroke-width="3" stroke-linejoin="round"/>
+                <line x1="152" y1="42" x2="152" y2="126" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="5,4"/>
+                <polyline points="152,116 162,116 162,126" fill="none" stroke="#dc2626" stroke-width="2"/>
+                <text x="158" y="148" text-anchor="middle" font-size="12.5" font-weight="800" fill="#4c1d95">${labelBottom}</text>
+                <text x="143" y="88" text-anchor="end" font-size="12.5" font-weight="800" fill="#b91c1c">${labelHeight}</text>
+            `, caption, areaLuasText);
+        }
+
+        function drawSegitigaSVG(labelBase, labelHeight, caption = "Segitiga", areaLuasText = "") {
+            return wrapIllustration(`
+                <polygon points="96,128 254,128 175,32" fill="#fde68a" stroke="#b45309" stroke-width="3" stroke-linejoin="round"/>
+                <line x1="175" y1="32" x2="175" y2="128" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="5,4"/>
+                <polyline points="175,118 185,118 185,128" fill="none" stroke="#dc2626" stroke-width="2"/>
+                <text x="175" y="150" text-anchor="middle" font-size="12.5" font-weight="800" fill="#78350f">${labelBase}</text>
+                <text x="185" y="86" text-anchor="start" font-size="12.5" font-weight="800" fill="#b91c1c">${labelHeight}</text>
+            `, caption, areaLuasText);
+        }
+
+        function drawBelahKetupatSVG(labelD1, labelD2, caption = "Belah Ketupat", areaLuasText = "") {
+            return wrapIllustration(`
+                <polygon points="170,28 246,98 170,168 94,98" fill="#fecdd3" stroke="#be123c" stroke-width="3" stroke-linejoin="round"/>
+                <line x1="94" y1="98" x2="246" y2="98" stroke="#be123c" stroke-width="2" stroke-dasharray="4,3"/>
+                <line x1="170" y1="28" x2="170" y2="168" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="4,3"/>
+                <text x="170" y="18" text-anchor="middle" font-size="12" font-weight="800" fill="#1e3a8a">${labelD1}</text>
+                <text x="170" y="188" text-anchor="middle" font-size="12" font-weight="800" fill="#881337">${labelD2}</text>
+            `, caption, areaLuasText);
+        }
+
+        function drawLayangLayangSVG(labelD1, labelD2, caption = "Layang-Layang", areaLuasText = "") {
+            return wrapIllustration(`
+                <polygon points="170,26 236,82 170,170 104,82" fill="#bae6fd" stroke="#0369a1" stroke-width="3" stroke-linejoin="round"/>
+                <line x1="170" y1="26" x2="170" y2="170" stroke="#0369a1" stroke-width="2" stroke-dasharray="4,3"/>
+                <line x1="104" y1="82" x2="236" y2="82" stroke="#b91c1c" stroke-width="2" stroke-dasharray="4,3"/>
+                <text x="180" y="128" text-anchor="start" font-size="12" font-weight="800" fill="#0c4a6e">${labelD1}</text>
+                <text x="170" y="72" text-anchor="middle" font-size="12" font-weight="800" fill="#991b1b">${labelD2}</text>
+            `, caption, areaLuasText);
+        }
+
+        function drawTrapesiumSVG(labelTop, labelBottom, labelHeight, caption = "Trapesium", areaLuasText = "") {
+            return wrapIllustration(`
+                <polygon points="128,40 220,40 252,130 96,130" fill="#fef08a" stroke="#a16207" stroke-width="3" stroke-linejoin="round"/>
+                <line x1="128" y1="40" x2="128" y2="130" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="5,4"/>
+                <polyline points="128,120 138,120 138,130" fill="none" stroke="#dc2626" stroke-width="2"/>
+                <text x="174" y="28" text-anchor="middle" font-size="12" font-weight="800" fill="#713f12">${labelTop}</text>
+                <text x="174" y="150" text-anchor="middle" font-size="12" font-weight="800" fill="#713f12">${labelBottom}</text>
+                <text x="118" y="90" text-anchor="end" font-size="12" font-weight="800" fill="#b91c1c">${labelHeight}</text>
+            `, caption, areaLuasText);
+        }
+
+        // ======================================================================
+        // BANK 30 SOAL ESSAY LUAS BANGUN DATAR
+        // ======================================================================
+        const QUIZ_QUESTIONS = [
+            // --- PERSEGI (SOAL 1 - 4) ---
+            {
+                id: 1,
+                topic: "Persegi",
+                badgeClass: "bg-indigo-100 text-indigo-800",
+                question: "Sebuah sapu tangan berbentuk persegi memiliki panjang sisi <strong>14 cm</strong>. Berapakah luas sapu tangan tersebut?",
+                unit: "cm²",
+                answer: 196,
+                svg: drawPersegiSVG("s = 14 cm", "s = 14 cm", "Persegi", "Luas = ?")
+            },
+            {
+                id: 2,
+                topic: "Persegi",
+                badgeClass: "bg-indigo-100 text-indigo-800",
+                question: "Sebuah ubin keramik berbentuk persegi mempunyai luas <strong>625 cm²</strong>. Berapakah panjang sisi ubin keramik tersebut?",
+                unit: "cm",
+                answer: 25,
+                svg: drawPersegiSVG("s = ?", "s = ?", "Persegi", "Luas = 625 cm²")
+            },
+            {
+                id: 3,
+                topic: "Persegi",
+                badgeClass: "bg-indigo-100 text-indigo-800",
+                question: "Sebuah lahan parkir berbentuk persegi memiliki panjang sisi <strong>18 m</strong>. Berapakah luas lahan parkir tersebut?",
+                unit: "m²",
+                answer: 324,
+                svg: drawPersegiSVG("s = 18 m", "s = 18 m", "Persegi", "Luas = ?")
+            },
+            {
+                id: 4,
+                topic: "Persegi",
+                badgeClass: "bg-indigo-100 text-indigo-800",
+                question: "Sebuah papan catur berbentuk persegi memiliki luas <strong>900 cm²</strong>. Berapakah panjang sisi papan catur tersebut?",
+                unit: "cm",
+                answer: 30,
+                svg: drawPersegiSVG("s = ?", "s = ?", "Persegi", "Luas = 900 cm²")
+            },
+
+            // --- PERSEGI PANJANG (SOAL 5 - 9) ---
+            {
+                id: 5,
+                topic: "Persegi Panjang",
+                badgeClass: "bg-emerald-100 text-emerald-800",
+                question: "Sebuah papan tulis berbentuk persegi panjang memiliki panjang <strong>24 cm</strong> dan lebar <strong>15 cm</strong>. Berapakah luas papan tulis tersebut?",
+                unit: "cm²",
+                answer: 360,
+                svg: drawPersegiPanjangSVG("p = 24 cm", "l = 15 cm", "Persegi Panjang", "Luas = ?")
+            },
+            {
+                id: 6,
+                topic: "Persegi Panjang",
+                badgeClass: "bg-emerald-100 text-emerald-800",
+                question: "Sebuah kebun berbentuk persegi panjang mempunyai luas <strong>210 m²</strong> dan panjang <strong>15 m</strong>. Berapakah lebar kebun tersebut?",
+                unit: "m",
+                answer: 14,
+                svg: drawPersegiPanjangSVG("p = 15 m", "l = ?", "Persegi Panjang", "Luas = 210 m²")
+            },
+            {
+                id: 7,
+                topic: "Persegi Panjang",
+                badgeClass: "bg-emerald-100 text-emerald-800",
+                question: "Sebuah karpet berbentuk persegi panjang memiliki luas <strong>192 m²</strong> dan lebar <strong>12 m</strong>. Berapakah panjang karpet tersebut?",
+                unit: "m",
+                answer: 16,
+                svg: drawPersegiPanjangSVG("p = ?", "l = 12 m", "Persegi Panjang", "Luas = 192 m²")
+            },
+            {
+                id: 8,
+                topic: "Persegi Panjang",
+                badgeClass: "bg-emerald-100 text-emerald-800",
+                question: "Sebuah poster berbentuk persegi panjang berukuran panjang <strong>35 cm</strong> dan lebar <strong>20 cm</strong>. Berapakah luas poster tersebut?",
+                unit: "cm²",
+                answer: 700,
+                svg: drawPersegiPanjangSVG("p = 35 cm", "l = 20 cm", "Persegi Panjang", "Luas = ?")
+            },
+            {
+                id: 9,
+                topic: "Persegi Panjang",
+                badgeClass: "bg-emerald-100 text-emerald-800",
+                question: "Sebuah ruang kelas berbentuk persegi panjang memiliki luas <strong>84 m²</strong> dan panjang <strong>12 m</strong>. Berapakah lebar ruang kelas tersebut?",
+                unit: "m",
+                answer: 7,
+                svg: drawPersegiPanjangSVG("p = 12 m", "l = ?", "Persegi Panjang", "Luas = 84 m²")
+            },
+
+            // --- JAJAR GENJANG (SOAL 10 - 14) ---
+            {
+                id: 10,
+                topic: "Jajar Genjang",
+                badgeClass: "bg-purple-100 text-purple-800",
+                question: "Sebuah jajar genjang memiliki panjang alas <strong>18 cm</strong> dan tinggi <strong>11 cm</strong>. Berapakah luas jajar genjang tersebut?",
+                unit: "cm²",
+                answer: 198,
+                svg: drawJajarGenjangSVG("alas = 18 cm", "t = 11 cm", "Jajar Genjang", "Luas = ?")
+            },
+            {
+                id: 11,
+                topic: "Jajar Genjang",
+                badgeClass: "bg-purple-100 text-purple-800",
+                question: "Sebuah sawah berbentuk jajar genjang memiliki luas <strong>320 m²</strong> dan tinggi <strong>16 m</strong>. Berapakah panjang alas sawah tersebut?",
+                unit: "m",
+                answer: 20,
+                svg: drawJajarGenjangSVG("alas = ?", "t = 16 m", "Jajar Genjang", "Luas = 320 m²")
+            },
+            {
+                id: 12,
+                topic: "Jajar Genjang",
+                badgeClass: "bg-purple-100 text-purple-800",
+                question: "Sebuah jajar genjang mempunyai luas <strong>168 cm²</strong> dan panjang alas <strong>21 cm</strong>. Berapakah tinggi jajar genjang tersebut?",
+                unit: "cm",
+                answer: 8,
+                svg: drawJajarGenjangSVG("alas = 21 cm", "t = ?", "Jajar Genjang", "Luas = 168 cm²")
+            },
+            {
+                id: 13,
+                topic: "Jajar Genjang",
+                badgeClass: "bg-purple-100 text-purple-800",
+                question: "Sebuah ubin bermotif jajar genjang memiliki alas <strong>25 cm</strong> dan tinggi <strong>14 cm</strong>. Berapakah luas ubin tersebut?",
+                unit: "cm²",
+                answer: 350,
+                svg: drawJajarGenjangSVG("alas = 25 cm", "t = 14 cm", "Jajar Genjang", "Luas = ?")
+            },
+            {
+                id: 14,
+                topic: "Jajar Genjang",
+                badgeClass: "bg-purple-100 text-purple-800",
+                question: "Sebuah bidang tanah berbentuk jajar genjang memiliki luas <strong>450 m²</strong> dan alas <strong>30 m</strong>. Berapakah tinggi bidang tanah tersebut?",
+                unit: "m",
+                answer: 15,
+                svg: drawJajarGenjangSVG("alas = 30 m", "t = ?", "Jajar Genjang", "Luas = 450 m²")
+            },
+
+            // --- SEGITIGA (SOAL 15 - 19) ---
+            {
+                id: 15,
+                topic: "Segitiga",
+                badgeClass: "bg-amber-100 text-amber-900",
+                question: "Sebuah segitiga memiliki panjang alas <strong>16 cm</strong> dan tinggi <strong>9 cm</strong>. Berapakah luas segitiga tersebut?",
+                unit: "cm²",
+                answer: 72,
+                svg: drawSegitigaSVG("alas = 16 cm", "t = 9 cm", "Segitiga", "Luas = ?")
+            },
+            {
+                id: 16,
+                topic: "Segitiga",
+                badgeClass: "bg-amber-100 text-amber-900",
+                question: "Sebuah layar perahu berbentuk segitiga memiliki luas <strong>90 m²</strong> dan panjang alas <strong>18 m</strong>. Berapakah tinggi layar tersebut?",
+                unit: "m",
+                answer: 10,
+                svg: drawSegitigaSVG("alas = 18 m", "t = ?", "Segitiga", "Luas = 90 m²")
+            },
+            {
+                id: 17,
+                topic: "Segitiga",
+                badgeClass: "bg-amber-100 text-amber-900",
+                question: "Sebuah potongan kertas berbentuk segitiga mempunyai luas <strong>120 cm²</strong> dan tinggi <strong>12 cm</strong>. Berapakah panjang alas segitiga tersebut?",
+                unit: "cm",
+                answer: 20,
+                svg: drawSegitigaSVG("alas = ?", "t = 12 cm", "Segitiga", "Luas = 120 cm²")
+            },
+            {
+                id: 18,
+                topic: "Segitiga",
+                badgeClass: "bg-amber-100 text-amber-900",
+                question: "Sebuah segitiga memiliki alas <strong>22 cm</strong> dan tinggi <strong>15 cm</strong>. Berapakah luas segitiga tersebut?",
+                unit: "cm²",
+                answer: 165,
+                svg: drawSegitigaSVG("alas = 22 cm", "t = 15 cm", "Segitiga", "Luas = ?")
+            },
+            {
+                id: 19,
+                topic: "Segitiga",
+                badgeClass: "bg-amber-100 text-amber-900",
+                question: "Sebuah rambu lalu lintas berbentuk segitiga memiliki luas <strong>108 cm²</strong> dan alas <strong>24 cm</strong>. Berapakah tinggi rambu tersebut?",
+                unit: "cm",
+                answer: 9,
+                svg: drawSegitigaSVG("alas = 24 cm", "t = ?", "Segitiga", "Luas = 108 cm²")
+            },
+
+            // --- BELAH KETUPAT (SOAL 20 - 23) ---
+            {
+                id: 20,
+                topic: "Belah Ketupat",
+                badgeClass: "bg-rose-100 text-rose-800",
+                question: "Sebuah belah ketupat memiliki panjang diagonal d₁ = 16 cm dan diagonal d₂ = 12 cm. Berapakah luas belah ketupat tersebut?",
+                unit: "cm²",
+                answer: 96,
+                svg: drawBelahKetupatSVG("d₁ = 16 cm", "d₂ = 12 cm", "Belah Ketupat", "Luas = ?")
+            },
+            {
+                id: 21,
+                topic: "Belah Ketupat",
+                badgeClass: "bg-rose-100 text-rose-800",
+                question: "Sebuah taman berbentuk belah ketupat memiliki luas <strong>150 m²</strong> dan panjang salah satu diagonalnya <strong>20 m</strong>. Berapakah panjang diagonal lainnya?",
+                unit: "m",
+                answer: 15,
+                svg: drawBelahKetupatSVG("d₁ = 20 m", "d₂ = ?", "Belah Ketupat", "Luas = 150 m²")
+            },
+            {
+                id: 22,
+                topic: "Belah Ketupat",
+                badgeClass: "bg-rose-100 text-rose-800",
+                question: "Sebuah belah ketupat memiliki panjang diagonal d₁ = 18 cm dan diagonal d₂ = 14 cm. Berapakah luas belah ketupat tersebut?",
+                unit: "cm²",
+                answer: 126,
+                svg: drawBelahKetupatSVG("d₁ = 18 cm", "d₂ = 14 cm", "Belah Ketupat", "Luas = ?")
+            },
+            {
+                id: 23,
+                topic: "Belah Ketupat",
+                badgeClass: "bg-rose-100 text-rose-800",
+                question: "Sebuah belah ketupat mempunyai luas <strong>240 cm²</strong> dan panjang diagonal d₁ = 24 cm. Berapakah panjang diagonal d₂?",
+                unit: "cm",
+                answer: 20,
+                svg: drawBelahKetupatSVG("d₁ = 24 cm", "d₂ = ?", "Belah Ketupat", "Luas = 240 cm²")
+            },
+
+            // --- LAYANG-LAYANG (SOAL 24 - 26) ---
+            {
+                id: 24,
+                topic: "Layang-Layang",
+                badgeClass: "bg-sky-100 text-sky-800",
+                question: "Sebuah layang-layang memiliki panjang diagonal d₁ = 26 cm dan diagonal d₂ = 14 cm. Berapakah luas layang-layang tersebut?",
+                unit: "cm²",
+                answer: 182,
+                svg: drawLayangLayangSVG("d₁ = 26 cm", "d₂ = 14 cm", "Layang-Layang", "Luas = ?")
+            },
+            {
+                id: 25,
+                topic: "Layang-Layang",
+                badgeClass: "bg-sky-100 text-sky-800",
+                question: "Sebuah mainan layang-layang memiliki luas <strong>216 cm²</strong> dan panjang diagonal d₂ = 18 cm. Berapakah panjang diagonal d₁?",
+                unit: "cm",
+                answer: 24,
+                svg: drawLayangLayangSVG("d₁ = ?", "d₂ = 18 cm", "Layang-Layang", "Luas = 216 cm²")
+            },
+            {
+                id: 26,
+                topic: "Layang-Layang",
+                badgeClass: "bg-sky-100 text-sky-800",
+                question: "Sebuah layang-layang memiliki panjang diagonal d₁ = 28 cm dan diagonal d₂ = 15 cm. Berapakah luas layang-layang tersebut?",
+                unit: "cm²",
+                answer: 210,
+                svg: drawLayangLayangSVG("d₁ = 28 cm", "d₂ = 15 cm", "Layang-Layang", "Luas = ?")
+            },
+
+            // --- TRAPESIUM (SOAL 27 - 30) ---
+            {
+                id: 27,
+                topic: "Trapesium",
+                badgeClass: "bg-yellow-100 text-yellow-900",
+                question: "Sebuah trapesium memiliki panjang sisi sejajar <strong>10 cm</strong> dan <strong>14 cm</strong>, serta tinggi <strong>8 cm</strong>. Berapakah luas trapesium tersebut?",
+                unit: "cm²",
+                answer: 96,
+                svg: drawTrapesiumSVG("a = 10 cm", "b = 14 cm", "t = 8 cm", "Trapesium", "Luas = ?")
+            },
+            {
+                id: 28,
+                topic: "Trapesium",
+                badgeClass: "bg-yellow-100 text-yellow-900",
+                question: "Sebuah trapesium memiliki panjang sisi sejajar <strong>12 cm</strong> dan <strong>18 cm</strong>, serta tinggi <strong>10 cm</strong>. Berapakah luas trapesium tersebut?",
+                unit: "cm²",
+                answer: 150,
+                svg: drawTrapesiumSVG("a = 12 cm", "b = 18 cm", "t = 10 cm", "Trapesium", "Luas = ?")
+            },
+            {
+                id: 29,
+                topic: "Trapesium",
+                badgeClass: "bg-yellow-100 text-yellow-900",
+                question: "Sebuah trapesium memiliki luas <strong>160 cm²</strong> dengan jumlah kedua sisi sejajarnya <strong>32 cm</strong>. Berapakah tinggi trapesium tersebut?",
+                unit: "cm",
+                answer: 10,
+                svg: drawTrapesiumSVG("a + b = 32 cm", "alas bawah", "t = ?", "Trapesium", "Luas = 160 cm²")
+            },
+            {
+                id: 30,
+                topic: "Trapesium",
+                badgeClass: "bg-yellow-100 text-yellow-900",
+                question: "Sebuah kebun berbentuk trapesium memiliki sisi sejajar <strong>16 m</strong> dan <strong>24 m</strong>, dengan tinggi <strong>12 m</strong>. Berapakah luas kebun tersebut?",
+                unit: "m²",
+                answer: 240,
+                svg: drawTrapesiumSVG("a = 16 m", "b = 24 m", "t = 12 m", "Trapesium", "Luas = ?")
+            }
+        ];
+
+        // State jawaban siswa: { [questionId]: string }
+        let userAnswers = {};
+        let currentQuestionIndex = 0;
+        let isNavHidden = false;
+
+        // Kunci penyimpanan cadangan lokal di memori / window agar tahan gangguan jaringan
+        const LOCAL_BACKUP_KEY = 'kuis_30_essay_luas_bangun_datar_backup_v1';
+
+        function saveLocalFallback() {
+            try {
+                if (window.name) {
+                    const parsedName = JSON.parse(window.name);
+                    if (parsedName && typeof parsedName === 'object') {
+                        parsedName[LOCAL_BACKUP_KEY] = {
+                            answers: userAnswers,
+                            lastQuestionIndex: currentQuestionIndex,
+                            updatedAt: Date.now()
+                        };
+                        window.name = JSON.stringify(parsedName);
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Abaikan jika window.name bukan JSON sebelumnya
+            }
+            try {
+                window.name = JSON.stringify({
+                    [LOCAL_BACKUP_KEY]: {
+                        answers: userAnswers,
+                        lastQuestionIndex: currentQuestionIndex,
+                        updatedAt: Date.now()
+                    }
+                });
+            } catch (e) {
+                // Abaikan jika dibatasi browser
+            }
+        }
+
+        function loadLocalFallback() {
+            try {
+                if (!window.name) return null;
+                const parsed = JSON.parse(window.name);
+                if (parsed && parsed[LOCAL_BACKUP_KEY]) {
+                    return parsed[LOCAL_BACKUP_KEY];
+                }
+            } catch (e) {
+                return null;
+            }
+            return null;
+        }
+
+        // Toggle sembunyikan / tampilkan panel navigasi
+        function toggleNavigationPanel() {
+            isNavHidden = !isNavHidden;
+            const sidebar = document.getElementById('quiz-nav-sidebar');
+            const questionCol = document.getElementById('quiz-question-column');
+            const label = document.getElementById('nav-toggle-label');
+
+            if (isNavHidden) {
+                sidebar.classList.add('hidden');
+                questionCol.className = 'lg:col-span-12 space-y-5';
+                label.textContent = 'Tampilkan Navigasi';
+            } else {
+                sidebar.classList.remove('hidden');
+                questionCol.className = 'lg:col-span-8 space-y-5';
+                label.textContent = 'Sembunyikan Navigasi';
+            }
+        }
+
+        // Parse input angka desimal dengan koma atau titik
+        function parseFlexibleNumber(raw) {
+            if (typeof raw !== 'string') return NaN;
+            const trimmed = raw.trim().replace(/\s+/g, '');
+            if (!trimmed) return NaN;
+
+            let normalized = trimmed;
+            if (trimmed.includes(',') && !trimmed.includes('.')) {
+                normalized = trimmed.replace(',', '.');
+            } else if (trimmed.includes('.') && trimmed.includes(',')) {
+                normalized = trimmed.replace(/\./g, '').replace(',', '.');
+            }
+            return Number(normalized);
+        }
+
+        // Evaluasi status satu soal: 'empty' | 'correct' | 'wrong'
+        function evaluateQuestion(q) {
+            const raw = userAnswers[q.id];
+            if (!raw || !raw.trim()) return 'empty';
+            const parsed = parseFlexibleNumber(raw);
+            if (isNaN(parsed)) return 'wrong';
+            return Math.abs(parsed - q.answer) < 1e-6 ? 'correct' : 'wrong';
+        }
+
+        // Render grid tombol navigasi 1..30
+        function renderNavigationGrid() {
+            const navGrid = document.getElementById('question-nav-grid');
+            navGrid.innerHTML = '';
+
+            QUIZ_QUESTIONS.forEach((q, idx) => {
+                const status = evaluateQuestion(q);
+                const isCurrent = idx === currentQuestionIndex;
+
+                let btnClass = 'bg-white border-2 border-slate-200 text-slate-700 hover:border-indigo-400';
+                if (status === 'correct') {
+                    btnClass = 'bg-emerald-500 border-2 border-emerald-600 text-white shadow-2xs';
+                } else if (status === 'wrong') {
+                    btnClass = 'bg-rose-500 border-2 border-rose-600 text-white shadow-2xs';
+                }
+
+                const activeRing = isCurrent ? 'ring-3 ring-indigo-300 scale-105 z-10 font-extrabold' : 'font-bold';
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `h-10 rounded-xl text-xs transition-all flex items-center justify-center cursor-pointer ${btnClass} ${activeRing}`;
+                btn.textContent = q.id;
+                btn.title = `Soal ${q.id}: ${q.topic}`;
+                btn.onclick = () => jumpToQuestion(q.id);
+                navGrid.appendChild(btn);
+            });
+        }
+
+        // Render kartu soal aktif
+        function renderActiveQuestionCard() {
+            const q = QUIZ_QUESTIONS[currentQuestionIndex];
+            const status = evaluateQuestion(q);
+            const rawVal = userAnswers[q.id] || '';
+
+            document.getElementById('active-q-badge').textContent = `Soal #${q.id} dari 30`;
+            const topicBadge = document.getElementById('active-q-topic');
+            topicBadge.textContent = q.topic;
+            topicBadge.className = `text-xs font-extrabold px-3 py-1 rounded-full ${q.badgeClass}`;
+
+            const statusPill = document.getElementById('active-q-status-pill');
+            if (status === 'correct') {
+                statusPill.textContent = '✓ Benar';
+                statusPill.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800';
+            } else if (status === 'wrong') {
+                statusPill.textContent = '✕ Salah';
+                statusPill.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-rose-100 text-rose-800';
+            } else {
+                statusPill.textContent = 'Menunggu Jawaban';
+                statusPill.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-slate-100 text-slate-600';
+            }
+
+            const bodyEl = document.getElementById('active-q-body');
+            bodyEl.innerHTML = `
+                <div class="md:col-span-7 space-y-2">
+                    <p class="text-slate-900 font-bold text-sm md:text-base leading-relaxed">${q.question}</p>
+                </div>
+                <div class="md:col-span-5">
+                    ${q.svg}
+                </div>
+            `;
+
+            document.getElementById('active-q-unit').textContent = q.unit;
+            const inputEl = document.getElementById('essay-answer-input');
+            inputEl.value = rawVal;
+
+            updateFeedbackBox(status, document.getElementById('active-q-feedback'));
+
+            document.getElementById('pos-indicator').textContent = `${currentQuestionIndex + 1} / 30`;
+            document.getElementById('btn-prev-q').disabled = currentQuestionIndex === 0;
+            document.getElementById('btn-next-q').disabled = currentQuestionIndex === QUIZ_QUESTIONS.length - 1;
+        }
+
+        // Perbarui kotak umpan balik Benar / Salah langsung tanpa membocorkan jawaban
+        function updateFeedbackBox(status, fbEl) {
+            if (!fbEl) return;
+            if (status === 'empty') {
+                fbEl.classList.add('hidden');
+                fbEl.innerHTML = '';
+                return;
+            }
+
+            fbEl.classList.remove('hidden');
+            if (status === 'correct') {
+                fbEl.className = 'p-3.5 rounded-2xl text-xs md:text-sm font-bold bg-emerald-50 text-emerald-900 border border-emerald-300';
+                fbEl.innerHTML = `<div class="flex items-center gap-2 text-emerald-700"><span>✓ BENAR!</span><span>Jawaban isianmu sudah tepat.</span></div>`;
+            } else {
+                fbEl.className = 'p-3.5 rounded-2xl text-xs md:text-sm font-bold bg-rose-50 text-rose-900 border border-rose-300';
+                fbEl.innerHTML = `<div class="flex items-center gap-2 text-rose-700"><span>✕ SALAH.</span><span>Jawaban belum tepat, silakan periksa kembali hitunganmu.</span></div>`;
+            }
+        }
+
+        // Perbarui statistik progres & jumlah benar
+        function updateStatsDisplay() {
+            let answeredCount = 0;
+            let correctCount = 0;
+
+            QUIZ_QUESTIONS.forEach(q => {
+                const st = evaluateQuestion(q);
+                if (st !== 'empty') answeredCount++;
+                if (st === 'correct') correctCount++;
+            });
+
+            const pct = Math.round((answeredCount / QUIZ_QUESTIONS.length) * 100);
+            document.getElementById('nav-answered-count').textContent = answeredCount;
+            document.getElementById('header-correct-count').textContent = correctCount;
+            document.getElementById('progress-percent').textContent = `${pct}%`;
+            document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+        }
+
+        // Handler saat pengguna mengetik jawaban pada soal ke-idx
+        function handleEssayInput(idx, value) {
+            const q = QUIZ_QUESTIONS[idx];
+            userAnswers[q.id] = value;
+            saveLocalFallback();
+
+            if (idx === currentQuestionIndex) {
+                const status = evaluateQuestion(q);
+                updateFeedbackBox(status, document.getElementById('active-q-feedback'));
+
+                const pill = document.getElementById('active-q-status-pill');
+                if (status === 'correct') {
+                    pill.textContent = '✓ Benar';
+                    pill.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800';
+                } else if (status === 'wrong') {
+                    pill.textContent = '✕ Salah';
+                    pill.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-rose-100 text-rose-800';
+                } else {
+                    pill.textContent = 'Menunggu Jawaban';
+                    pill.className = 'text-xs font-extrabold px-3.5 py-1 rounded-full bg-slate-100 text-slate-600';
+                }
+            }
+
+            renderNavigationGrid();
+            updateStatsDisplay();
+            persistAnswersToCloud();
+        }
+
+        function clearCurrentAnswer() {
+            handleEssayInput(currentQuestionIndex, '');
+            const inputEl = document.getElementById('essay-answer-input');
+            if (inputEl) inputEl.focus();
+        }
+
+        function jumpToQuestion(qNumber) {
+            const idx = Math.max(0, Math.min(QUIZ_QUESTIONS.length - 1, qNumber - 1));
+            currentQuestionIndex = idx;
+            saveLocalFallback();
+            renderActiveQuestionCard();
+            renderNavigationGrid();
+            persistAnswersToCloud();
+        }
+
+        function navigateStep(delta) {
+            const nextIdx = currentQuestionIndex + delta;
+            if (nextIdx >= 0 && nextIdx < QUIZ_QUESTIONS.length) {
+                currentQuestionIndex = nextIdx;
+                saveLocalFallback();
+                renderActiveQuestionCard();
+                renderNavigationGrid();
+                persistAnswersToCloud();
+            }
+        }
+
+        // ======================================================================
+        // PENYIMPANAN OTOMATIS KE FIRESTORE + CADANGAN SESI
+        // ======================================================================
+        let firestoreDocRef = null;
+        let saveDebounceTimer = null;
+
+        function setSaveIndicator(state, message) {
+            const dot = document.getElementById('save-dot');
+            const text = document.getElementById('save-status-text');
+            text.textContent = message;
+
+            if (state === 'saved') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400';
+            } else if (state === 'saving') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-300 animate-ping';
+            } else if (state === 'offline') {
+                dot.className = 'w-2.5 h-2.5 rounded-full bg-rose-300';
+            }
+        }
+
+        function persistAnswersToCloud() {
+            saveLocalFallback();
+            setSaveIndicator('saving', 'Menyimpan jawaban...');
+
+            if (saveDebounceTimer) clearTimeout(saveDebounceTimer);
+
+            saveDebounceTimer = setTimeout(async () => {
+                if (!firestoreDocRef || !window.__firestoreSetDoc) {
+                    setSaveIndicator('offline', 'Tersimpan di sesi (menunggu sinkronisasi)');
+                    return;
+                }
+                try {
+                    await window.__firestoreSetDoc(
+                        firestoreDocRef,
+                        {
+                            answers: userAnswers,
+                            lastQuestionIndex: currentQuestionIndex,
+                            updatedAt: Date.now()
+                        },
+                        { merge: true }
+                    );
+                    setSaveIndicator('saved', 'Tersimpan otomatis');
+                } catch (err) {
+                    console.error('Gagal menyimpan ke cloud:', err);
+                    setSaveIndicator('offline', 'Jaringan terputus • jawaban tetap aman');
+                }
+            }, 300);
+        }
+
+        function applyLoadedData(data) {
+            if (!data || typeof data !== 'object') return;
+            if (data.answers && typeof data.answers === 'object') {
+                // Gabungkan isian lokal terbaru bila ada agar ketikan yang belum sempat terkirim tidak tertimpa
+                const merged = { ...data.answers };
+                Object.keys(userAnswers).forEach((key) => {
+                    if (userAnswers[key] !== undefined && userAnswers[key] !== '') {
+                        merged[key] = userAnswers[key];
+                    }
+                });
+                userAnswers = merged;
+            }
+            if (typeof data.lastQuestionIndex === 'number' && data.lastQuestionIndex >= 0 && data.lastQuestionIndex < QUIZ_QUESTIONS.length) {
+                currentQuestionIndex = data.lastQuestionIndex;
+            }
+            saveLocalFallback();
+            renderNavigationGrid();
+            renderActiveQuestionCard();
+            updateStatsDisplay();
+            setSaveIndicator('saved', 'Jawaban pulih & tersimpan');
+        }
+
+        // Modal Rekap Nilai
+        function openSummaryModal() {
+            let correct = 0;
+            let wrong = 0;
+            const breakdownEl = document.getElementById('modal-breakdown-list');
+            breakdownEl.innerHTML = '';
+
+            QUIZ_QUESTIONS.forEach(q => {
+                const st = evaluateQuestion(q);
+                if (st === 'correct') correct++;
+                else if (st === 'wrong') wrong++;
+
+                const statusLabel = st === 'correct'
+                    ? `<span class="text-emerald-700 font-extrabold">✓ Benar</span>`
+                    : st === 'wrong'
+                        ? `<span class="text-rose-700 font-extrabold">✕ Salah</span>`
+                        : `<span class="text-slate-400 font-bold">• Belum dijawab</span>`;
+
+                const row = document.createElement('div');
+                row.className = 'p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-1';
+                row.innerHTML = `
+                    <div><strong class="text-slate-800">Soal ${q.id}</strong> <span class="text-slate-500">(${q.topic})</span> — Isian: <strong>${userAnswers[q.id] || '-'}</strong></div>
+                    <div>${statusLabel}</div>
+                `;
+                breakdownEl.appendChild(row);
+            });
+
+            const finalScore = Math.round((correct / QUIZ_QUESTIONS.length) * 100);
+            document.getElementById('modal-correct').textContent = correct;
+            document.getElementById('modal-wrong').textContent = wrong;
+            document.getElementById('modal-score').textContent = finalScore;
+            document.getElementById('summary-modal').classList.remove('hidden');
+        }
+
+        function closeSummaryModal() {
+            document.getElementById('summary-modal').classList.add('hidden');
+        }
+
+        // Modal Reset Jawaban
+        function openResetModal() {
+            document.getElementById('reset-modal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.add('hidden');
+        }
+
+        async function confirmResetAllAnswers() {
+            userAnswers = {};
+            currentQuestionIndex = 0;
+            saveLocalFallback();
+            renderNavigationGrid();
+            renderActiveQuestionCard();
+            updateStatsDisplay();
+            closeResetModal();
+
+            if (firestoreDocRef && window.__firestoreSetDoc) {
+                try {
+                    await window.__firestoreSetDoc(firestoreDocRef, {
+                        answers: {},
+                        lastQuestionIndex: 0,
+                        updatedAt: Date.now()
+                    });
+                    setSaveIndicator('saved', 'Semua jawaban dikosongkan');
+                } catch (err) {
+                    console.error('Gagal reset di cloud:', err);
+                    setSaveIndicator('offline', 'Dikosongkan di sesi (menunggu koneksi)');
+                }
+            }
+        }
+
+        // Pulihkan cadangan sesi jika halaman sempat ter-reload
+        const restoredFallback = loadLocalFallback();
+        if (restoredFallback) {
+            if (restoredFallback.answers && typeof restoredFallback.answers === 'object') {
+                userAnswers = { ...restoredFallback.answers };
+            }
+            if (typeof restoredFallback.lastQuestionIndex === 'number' && restoredFallback.lastQuestionIndex >= 0 && restoredFallback.lastQuestionIndex < QUIZ_QUESTIONS.length) {
+                currentQuestionIndex = restoredFallback.lastQuestionIndex;
+            }
+        }
+
+        // Inisialisasi awal UI
+        renderNavigationGrid();
+        renderActiveQuestionCard();
+        updateStatsDisplay();
+    </script>
+
+    <!-- ====================================================================== -->
+    <!-- INTEGRASI FIRESTORE UNTUK PERSISTENSI LINTAS RELOAD & KONEKSI        -->
+    <!-- ====================================================================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const rawConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : '';
+        const initialToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        async function initCloudPersistence() {
+            try {
+                if (!rawConfig) {
+                    setSaveIndicator('offline', 'Tersimpan aman di sesi');
+                    return;
+                }
+                const firebaseConfig = JSON.parse(rawConfig);
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                if (initialToken) {
+                    await signInWithCustomToken(auth, initialToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                const user = auth.currentUser;
+                if (!user) return;
+
+                const userId = user.uid;
+                const progressDocRef = doc(db, 'artifacts', appId, 'users', userId, 'quiz_luas_30_essay', 'progress');
+                firestoreDocRef = progressDocRef;
+                window.__firestoreSetDoc = setDoc;
+
+                // Jika ada jawaban yang sudah terisi sebelum auth selesai, langsung sinkronkan
+                if (Object.keys(userAnswers).length > 0) {
+                    await setDoc(
+                        progressDocRef,
+                        {
+                            answers: userAnswers,
+                            lastQuestionIndex: currentQuestionIndex,
+                            updatedAt: Date.now()
+                        },
+                        { merge: true }
+                    );
+                }
+
+                onSnapshot(
+                    progressDocRef,
+                    (snap) => {
+                        if (snap.exists()) {
+                            applyLoadedData(snap.data());
+                        } else {
+                            setSaveIndicator('saved', 'Tersimpan otomatis');
+                        }
+                    },
+                    (error) => {
+                        console.error('Error listener Firestore:', error);
+                        setSaveIndicator('offline', 'Jaringan terputus • jawaban tetap aman');
+                    }
+                );
+            } catch (error) {
+                console.error('Inisialisasi penyimpanan gagal:', error);
+                setSaveIndicator('offline', 'Mode offline • jawaban tetap aman');
+            }
+        }
+
+        window.addEventListener('online', () => {
+            if (firestoreDocRef && window.__firestoreSetDoc) {
+                persistAnswersToCloud();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            setSaveIndicator('offline', 'Jaringan terputus • jawaban tetap aman');
+        });
+
+        initCloudPersistence();
+    </script>
+</body>
+</html>
